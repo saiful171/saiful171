@@ -1,0 +1,186 @@
+Create user : 
+Create user 'student'@'localhost' identified by 'student';
+
+show user :
+select user from mysql.user;
+
+
+and has higer precison than or ;
+
+in operator 
+select * 
+FROM  products
+where quantity_in_stock in(49,38,72);
+
+between operator 
+select * 
+from customers
+where birth_date between '1990-01-01' and '2000-01-01';
+
+like operator
+select * 
+from customers
+where last_name like 'b%'; b er por jotu character thak nah kono matter kore nah   .
+%b%: means any number of character before and after b ;
+%b :last character will be b ;
+_b: two character last character will be b 
+b____y: start b majkane 4 char sesh e  y ;
+
+
+select * 
+from customers
+where address like  '%trail%' or 
+address like '%avenue%';
+
+regexp 'field$ : like '%trail 
+regexp '[gim]e'; means last name end with ge/ie/me/
+regexp'^f': like'b%'
+regexp[a-h]e: a to h ;
+limit limit kore dee dei koita show korbe 
+
+
+
+select * 
+from customers 
+limit 6,3: ekane protome 6ta record skip korbe then porer 3 ta record show krobe . 
+
+
+
+select *
+from order_items oi
+join products p on oi.product_id = p.product_id;
+
+
+joining across database: 
+select *
+from order_items oi
+join products p on oi.product_id = p.product_id;
+
+
+self join : 
+
+use sql_hr;
+select e.employee_id,m.employee_id as manager_id
+from employees e 
+join employees m 
+	on e.reports_to = m.employee_id
+
+
+how to join multiple table : 
+use sql_invoicing;
+select p.date,p.invoice_id,c.name ,pm.name as mthod_name 
+from payments p 
+join clients c 
+	on p.client_id = c.client_id
+join payment_methods pm 
+	on p.payment_method = pm.payment_method_id;
+
+compound join  conditions: (is when we use compostie primary key ) 
+select * 
+from order_items oi 
+join order_item_notes oin
+	on oi.order_id = oin.order_Id
+    and oi.product_id = oin.product_id 
+    -- compound join conditions . 
+
+implicit join condtion : 
+select * 
+from orders o ,customers c 
+where o.customer_id = c.customer_id >> implicit join conditions ;
+
+
+is same as 
+
+select * 
+from orders o 
+join customers c 
+on  o.customer_id = c.customer_id ;
+
+outer join multiple join: 
+ select c.customer_id,c.first_name,o.order_id
+from customers c 
+left join orders o 
+	 on c.customer_id = o.customer_id
+     left join shippers sh 
+     on o.shipper_id = sh.shipper_id
+order by  c.customer_id ; 
+
+
+self inner join : 
+select e.employee_id,e.first_name , m.first_name as manager
+from employees e 
+left join employees m 
+on e.reports_to = m.employee_id
+
+using clause : select * 
+from  orders o 
+join customers c 
+-- on o.customer_id = c.customer_id
+using (customer_id);use when column name is same ; 
+select p.date,c.name as client ,p.amount,pm.name as payment_method 
+from payments p 
+join clients c 
+using (client_id)
+join payment_methods pm 
+on p.payment_method = pm.payment_method_id
+
+
+natural join ;: is not prefer to use 
+use sql_store;
+select o.order_id ,
+c.customer_id 
+from orders o 
+natural join customers c 
+it is not work when we have not same name of columns 
+
+
+ cross join : 
+  select * 
+from shippers s , products p; implicit 
+
+
+select *  explicit 
+from shippers s 
+cross join products p 
+
+
+union :combine result of multiple quries 
+ select order_id ,
+order_date ,
+'active' as status 
+from orders 
+where order_date >= '2019-01-01'
+union
+select order_id ,
+order_date ,
+'archive ' as status 
+from orders 
+where order_date <= '2019-01-01';
+
+select first_name
+-- first_name print hobe kali ekane  
+from customers 
+union
+select name 
+from shippers 
+
+how to insert into multiple tables ; 
+insert into orders(customer_id,order_date,status)
+values(1,'2019-01-02',1);
+insert into order_items
+values( last_insert_id(),1,1,2.95)
+
+creating copy of data : 
+create table order_archives as 
+select * from  orders ;
+
+
+oder archive e selected row gula add kora hoise : 
+insert into order_archives 
+select * from  orders
+where order_date < '2019-01-01' ;
+
+update table: 
+update invoices 
+set payment_total = 10, payment_date='2019-03-01'
+where invoice_id=1
